@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Ropa+Sans&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    background-color: #FFFBE9;
+}
+.header-background{
+    background-color: #AD8B73;
+    position: fixed;
+    z-index: 10;
+}
+
+.header-font{
+    font-family: 'Ropa Sans', sans-serif;
+    font-size: 1.5em;
+}
+.nav-link{
+    color: #FFFBE9;
+}
+.nav-link:hover{
+    color: #EEEAD8;
+}
+.filters-background{
+    position: fixed;
+    top: 8.7%;
+
+    background-color: #CEAB93;
+    min-height: 900px;
+    padding-left: 10px;
+}
+h4{
+    margin-top: 20px;
+    font-weight: 400;
+}
+.piece-of-filter{
+    width: 80px;
+    height: 65px;
+    border-radius: 15px;
+    border: 4px solid #E3CAA5;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.filter-in-row{
+    margin-left: 10px;
+}
+.bi{
+    color: #E3CAA5;
+}
+i{
+    color: #E3CAA5;
+    font-size: 20px;
+    margin-top: 5px;
+}
+.center{
+    position: absolute;
+    top: 8.7%;
+    left: 25%;
+    height: 400px;
+    padding: 10px;
+}
+.map-box{
+    position: fixed;
+    top: 8.7%;
+    right: 0;
+    min-height: 900px;
+    background-color: red;
+}
+.sign-up-alert{
+    background-color: #E3CAA5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    border-radius: 30px;
+    font-size: 17px;
+}
+.number-of-cafe{
+    margin-top: 20px;
+    font-size: 30px;
+}
+.cafe{
+    height: 200px;
+    margin-top: 10px;
+}
+.cafes-name{
+    margin-top: 10px;
+}
+.rating{
+    position: relative;
+    top: 10px;
+    left: 190px;
+    width: 65px;
+    padding: 5px;
+    color: #00BF63;
+    border: 2px solid #00BF63;
+    border-radius: 10px;
+}
+.show-more-link{
+    position: relative;
+    top: 132px;
+    left: 160px;
+    text-decoration: none;
+    color: white;
+    padding: 8px;
+    background-color: #E3CAA5;
+    border-radius: 10px;
+}
+.form-center{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform:translate(-50%,-50%);
+}
+form {
+    background-color: #E3CAA5;
+    padding: 50px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+input[type='submit']{
+    position: absolute;
+    bottom: 0;
+    height: 40px;
+    border: none;
+    background-color: #CEAB93;
+    width:100%;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+input[type='text'],
+input[type='email'],
+input[type='password']{
+    background-color: #FFFBE9;
+    border: none;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
