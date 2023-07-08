@@ -2,10 +2,52 @@ from flask import Flask, render_template, url_for, redirect, flash, abort
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'ASBouy1g278saodhas'
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cafe.db"
+db = SQLAlchemy(app)
+
+class Cafe(db.Model):
+    __tablename__ = 'cafe'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), unique=True, nullable=False)
+    localization = db.Column(db.String(250), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    #FILTERS
+    has_sockets = db.Column(db.Integer, nullable=False)
+    quiet = db.Column(db.Integer, nullable=False)
+    wifi = db.Column(db.Integer, nullable=False)
+    groups = db.Column(db.Integer, nullable=False)
+    coffee = db.Column(db.Integer, nullable=False)
+    food = db.Column(db.Integer, nullable=False)
+    alcohol = db.Column(db.Integer, nullable=False)
+    parking = db.Column(db.Integer, nullable=False)
+    toilet = db.Column(db.Integer, nullable=False)
+# 0 = doesn't exist
+# 1 = exist but work bad
+# 2 = exist work quite good
+# 3 = exist and work really well
+    #RELATIONSHIP
+    cafe = relationship('Cafe_hours', back_populates='cafe')
+
+
+class Cafe_hours(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    monday = db.Column(db.String(250), nullable=False)
+    tuesday = db.Column(db.String(250), nullable=False)
+    wednesday = db.Column(db.String(250), nullable=False)
+    thursday = db.Column(db.String(250), nullable=False)
+    friday = db.Column(db.String(250), nullable=False)
+    saturday = db.Column(db.String(250), nullable=False)
+    sunday = db.Column(db.String(250), nullable=False)
+    #RELATIONSHIP
+    cafe_id = db.Column(db.Integer, db.ForeignKey('cafe.id'))
+    cafe = relationship("Cafe", back_populates='cafe')
+
 
 
 class Register(FlaskForm):
@@ -17,6 +59,7 @@ class Register(FlaskForm):
 
 @app.route('/')
 def home():
+    db.create_all()
     return render_template('index.html')
 
 
