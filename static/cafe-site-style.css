@@ -28,6 +28,16 @@
 .props-box{
     position: relative;
 }
+.grey::after{
+    position: absolute;
+    content: '';
+    width: 20px;
+    height: 2px;
+    background-color: grey;
+    left: 0;
+    bottom: -10px;
+}
+
 .yellow::after{
     position: absolute;
     content: '';

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-    <link href="static/style.css" rel="stylesheet"/>
-    <link href="static/cafe-site-style.css" rel="stylesheet">
+    <link href="../static/style.css" rel="stylesheet"/>
+    <link href="../static/cafe-site-style.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/a34c3309be.js" crossorigin="anonymous"></script>
-    <title>Logo</title>
 </head>
 <body>
     <div class="container-fluid header-background">
@@ -26,13 +26,13 @@
         </header>
     </div>
     <div>
-        <img class="cafe-background" src="static/pexels-afta-putta-gunawan-683039 (1).jpg">
-        <span class="cafe-name">NAZWA KAWIARNI</span>
+        <img class="cafe-background" src="../static/pexels-afta-putta-gunawan-683039 (1).jpg">
+        <span class="cafe-name">{{ cafe.name }}</span>
         <div class="cafe-site-rating">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi-heart-fill" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
             </svg>
-            <span>98%</span>
+            <span>{{ cafe.rating }}%</span>
         </div>
     </div><br>
     <div class="container-fluid">
@@ -41,7 +41,7 @@
                 <h4>PRODUCTIVITY</h4>
                 <div class="row container">
 
-                    <div class="col-3 props-box green">
+                    <div class="col-3 props-box {{color_dict[cafe.has_sockets]}}">
                         <span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-plug-fill" viewBox="0 0 16 16">
                                 <path d="M6 0a.5.5 0 0 1 .5.5V3h3V.5a.5.5 0 0 1 1 0V3h1a.5.5 0 0 1 .5.5v3A3.5 3.5 0 0 1 8.5 10c-.002.434-.01.845-.04 1.22-.041.514-.126 1.003-.317 1.424a2.083 2.083 0 0 1-.97 1.028C6.725 13.9 6.169 14 5.5 14c-.998 0-1.61.33-1.974.718A1.922 1.922 0 0 0 3 16H2c0-.616.232-1.367.797-1.968C3.374 13.42 4.261 13 5.5 13c.581 0 .962-.088 1.218-.219.241-.123.4-.3.514-.55.121-.266.193-.621.23-1.09.027-.34.035-.718.037-1.141A3.5 3.5 0 0 1 4 6.5v-3a.5.5 0 0 1 .5-.5h1V.5A.5.5 0 0 1 6 0z"/>
@@ -50,7 +50,7 @@
                         <span>Sockets</span>
                     </div>
 
-                    <div class="col-3 props-box green">
+                    <div class="col-3 props-box {{color_dict[cafe.quiet]}}">
                         <span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-volume-up-fill" viewBox="0 0 16 16">
                                 <path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-.708.707A7.476 7.476 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/>
@@ -61,7 +61,7 @@
                         <span>Quiet</span>
                     </div>
 
-                    <div class="col-3 props-box green">
+                    <div class="col-3 props-box {{color_dict[cafe.wifi]}}">
                         <span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-wifi" viewBox="0 0 16 16">
                                 <path d="M15.384 6.115a.485.485 0 0 0-.047-.736A12.444 12.444 0 0 0 8 3C5.259 3 2.723 3.882.663 5.379a.485.485 0 0 0-.048.736.518.518 0 0 0 .668.05A11.448 11.448 0 0 1 8 4c2.507 0 4.827.802 6.716 2.164.205.148.49.13.668-.049z"/>
@@ -75,7 +75,7 @@
 
                 <h4 style="margin-top: 40px;">COMMUNITY</h4>
                 <div class="row container">
-                    <div class="col-3 props-box yellow">
+                    <div class="col-3 props-box {{color_dict[cafe.groups]}}">
                         <span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
                               <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
@@ -87,7 +87,7 @@
 
                 <h4 style="margin-top: 40px;">SERVICE</h4>
                 <div class="row container">
-                    <div class="col-3 props-box green">
+                    <div class="col-3 props-box {{color_dict[cafe.coffee]}}">
                         <span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cup-hot-fill" viewBox="0 0 16 16">
                               <path fill-rule="evenodd" d="M.5 6a.5.5 0 0 0-.488.608l1.652 7.434A2.5 2.5 0 0 0 4.104 16h5.792a2.5 2.5 0 0 0 2.44-1.958l.131-.59a3 3 0 0 0 1.3-5.854l.221-.99A.5.5 0 0 0 13.5 6H.5ZM13 12.5a2.01 2.01 0 0 1-.316-.025l.867-3.898A2.001 2.001 0 0 1 13 12.5Z"/>
@@ -97,12 +97,12 @@
                         <span>Coffee</span>
                     </div>
 
-                    <div class="col-3 props-box yellow">
+                    <div class="col-3 props-box {{color_dict[cafe.food]}}">
                         <i class="fa-solid fa-burger"></i>
                         <span>Food</span>
                     </div>
 
-                    <div class="col-3 props-box red">
+                    <div class="col-3 props-box {{color_dict[cafe.alcohol]}}">
                         <i class="fa-solid fa-wine-bottle"></i>
                         <span>Alcohol</span>
                     </div>
@@ -110,7 +110,7 @@
 
                 <h4 style="margin-top: 40px;">SPACE</h4>
                 <div class="row container">
-                    <div class="col-3 props-box red">
+                    <div class="col-3 props-box {{color_dict[cafe.parking]}}">
                         <span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-car-front-fill" viewBox="0 0 16 16">
                               <path d="M2.52 3.515A2.5 2.5 0 0 1 4.82 2h6.362c1 0 1.904.596 2.298 1.515l.792 1.848c.075.175.21.319.38.404.5.25.855.715.965 1.262l.335 1.679c.033.161.049.325.049.49v.413c0 .814-.39 1.543-1 1.997V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.338c-1.292.048-2.745.088-4 .088s-2.708-.04-4-.088V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.892c-.61-.454-1-1.183-1-1.997v-.413a2.5 2.5 0 0 1 .049-.49l.335-1.68c.11-.546.465-1.012.964-1.261a.807.807 0 0 0 .381-.404l.792-1.848ZM3 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM6 8a1 1 0 0 0 0 2h4a1 1 0 1 0 0-2H6ZM2.906 5.189a.51.51 0 0 0 .497.731c.91-.073 3.35-.17 4.597-.17 1.247 0 3.688.097 4.597.17a.51.51 0 0 0 .497-.731l-.956-1.913A.5.5 0 0 0 11.691 3H4.309a.5.5 0 0 0-.447.276L2.906 5.19Z"/>
@@ -119,7 +119,7 @@
                         <span>Parking</span>
                     </div>
 
-                    <div class="col-3 props-box green">
+                    <div class="col-3 props-box {{color_dict[cafe.toilet]}}">
                         <i class="fa-solid fa-toilet"></i>
                         <span>Toilet</span>
                     </div>
@@ -128,14 +128,14 @@
             </div>
             <div class="col-4 border-left">
                 <span class="hours">
-                    Pon: 9:00 - 23:00<br>
-                    Wt: 9:00 - 23:00<br>
-                    Śr: 9:00 - 23:00<br>
-                    Czw: 9:00 - 23:00<br>
-                    Pt: 9:00 - 23:00<br>
-                    Sb: 10:00 - 21:00<br>
-                    Ndz: Closed<br>
-                    <i class="fa-solid fa-paper-plane"></i> Sienkiewicza 49
+                    Pon: {{ cafe.cafe[0].mon }}<br>
+                    Wt: {{ cafe.cafe[0].tue }}<br>
+                    Śr: {{ cafe.cafe[0].wed }}<br>
+                    Czw: {{ cafe.cafe[0].thu }}<br>
+                    Pt: {{ cafe.cafe[0].fri }}<br>
+                    Sb: {{ cafe.cafe[0].sat }}<br>
+                    Ndz: {{ cafe.cafe[0].sun }}<br>
+                    <i class="fa-solid fa-paper-plane"></i> {{ cafe.localization }}
                 </span>
             </div>
         </div>
