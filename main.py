@@ -65,6 +65,7 @@ def home():
     today = now.strftime('%a').lower()
     all_cafe = db.session.scalars(db.select(Cafe)).all()
     return render_template('index.html', all_cafes=all_cafe, today=today)
+# test
 
 
 @app.route('/cafe/<cafe_id>')
