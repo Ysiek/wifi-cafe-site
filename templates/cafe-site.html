@@ -20,8 +20,10 @@
   
           <ul class="nav nav-pills">
             <li class="nav-item"><a href="cafe-site" class="nav-link">All cities</a></li>
+            {% if not logged_in %}
             <li class="nav-item"><a href="#" class="nav-link">Log in</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Register</a></li>
+            <li class="nav-item"><a href="{{ url_for('register') }}" class="nav-link">Register</a></li>
+            {% endif %}
           </ul>
         </header>
     </div>

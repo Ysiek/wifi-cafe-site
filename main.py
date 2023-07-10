@@ -4,6 +4,7 @@ from wtforms import StringField, EmailField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
+from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from datetime import datetime
 
 app = Flask(__name__)
@@ -11,6 +12,14 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'ASBouy1g278saodhas'
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cafe.db"
 db = SQLAlchemy(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.scalars(db.select(User).where(User.id == user_id)).first()
 
 
 class Cafe(db.Model):
@@ -52,6 +61,13 @@ class Cafe_hours(db.Model):
     cafe = relationship("Cafe", back_populates='cafe')
 
 
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(250), unique=True, nullable=False)
+    password = db.Column(db.String(250), nullable=False)
+    name = db.Column(db.String(250), nullable=False)
+
+
 class Register(FlaskForm):
     email = EmailField('Email', validators=[DataRequired()])
     name = StringField('Name', validators=[DataRequired()])
@@ -64,7 +80,7 @@ def home():
     now = datetime.now()
     today = now.strftime('%a').lower()
     all_cafe = db.session.scalars(db.select(Cafe)).all()
-    return render_template('index.html', all_cafes=all_cafe, today=today)
+    return render_template('index.html', all_cafes=all_cafe, today=today, user=current_user, logged_in=current_user.is_authenticated)
 
 
 @app.route('/cafe/<cafe_id>')
@@ -76,12 +92,22 @@ def cafe_site(cafe_id):
         2: 'yellow',
         3: 'green'
     }
-    return render_template('cafe-site.html', cafe=cafe, color_dict=color_dict)
+    return render_template('cafe-site.html', cafe=cafe, color_dict=color_dict, user=current_user, logged_in=current_user.is_authenticated)
 
 
-@app.route('/register')
+@app.route('/register', methods=["GET", "POST"])
 def register():
     form = Register()
+    if form.validate_on_submit():
+        new_user = User(
+            email=form.email.data,
+            password=form.password.data,
+            name=form.name.data
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        login_user(new_user)
+        return redirect(url_for('home'))
     return render_template('register.html', form=form)
 
 
