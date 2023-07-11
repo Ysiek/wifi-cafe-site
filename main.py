@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, redirect, flash, abort
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, PasswordField, SubmitField
+from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
@@ -75,6 +76,12 @@ class Register(FlaskForm):
     submit = SubmitField('Register')
 
 
+class Login(FlaskForm):
+    email = EmailField('Email', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Register')
+
+
 @app.route('/')
 def home():
     now = datetime.now()
@@ -94,6 +101,21 @@ def cafe_site(cafe_id):
     }
     return render_template('cafe-site.html', cafe=cafe, color_dict=color_dict, user=current_user, logged_in=current_user.is_authenticated)
 
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    form = Login()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+        user_to_login = db.session.scalars(db.select(User).where(User.email == email)).first()
+        print(db.session.scalars(db.select(User.password).where(User.email == email)))
+        if not user_to_login:
+            abort(403)
+        if not check_password_hash(db.session.scalars(db.select(User.password).where(User.email == email)).first(), password):
+            print("zle haslo")
+        login_user(user_to_login)
+        return redirect(url_for('home'))
+    return render_template('login.html', form=form)
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -101,7 +123,7 @@ def register():
     if form.validate_on_submit():
         new_user = User(
             email=form.email.data,
-            password=form.password.data,
+            password=generate_password_hash(form.password.data, 'pbkdf2', salt_length=8),
             name=form.name.data
         )
         db.session.add(new_user)
@@ -109,6 +131,11 @@ def register():
         login_user(new_user)
         return redirect(url_for('home'))
     return render_template('register.html', form=form)
+
+@app.route('/logout')
+def log_out():
+    logout_user()
+    return redirect(url_for('home'))
 
 
 if __name__ == '__main__':
