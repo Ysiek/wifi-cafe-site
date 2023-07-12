@@ -17,6 +17,9 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+now = datetime.now()
+today = now.strftime('%a').lower()
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -81,13 +84,25 @@ class Login(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Register')
 
+FILTERS = None
 
 @app.route('/')
 def home():
-    now = datetime.now()
-    today = now.strftime('%a').lower()
-    all_cafe = db.session.scalars(db.select(Cafe)).all()
-    return render_template('index.html', all_cafes=all_cafe, today=today, user=current_user, logged_in=current_user.is_authenticated)
+    global FILTERS
+
+    if not FILTERS:
+        all_cafes = db.session.scalars(db.select(Cafe)).all()
+    if FILTERS == 'has_sockets':
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.has_sockets.asc())).all()
+    return render_template('index.html', all_cafes=all_cafes, today=today, user=current_user,
+                           logged_in=current_user.is_authenticated)
+
+
+@app.route('/filter/<types>')
+def filters_manager(types):
+    global FILTERS
+    FILTERS = types
+    return redirect(url_for('home'))
 
 
 @app.route('/cafe/<cafe_id>')
@@ -99,7 +114,9 @@ def cafe_site(cafe_id):
         2: 'yellow',
         3: 'green'
     }
-    return render_template('cafe-site.html', cafe=cafe, color_dict=color_dict, user=current_user, logged_in=current_user.is_authenticated)
+    return render_template('cafe-site.html', cafe=cafe, color_dict=color_dict, user=current_user,
+                           logged_in=current_user.is_authenticated)
+
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
@@ -111,11 +128,13 @@ def login():
         print(db.session.scalars(db.select(User.password).where(User.email == email)))
         if not user_to_login:
             abort(403)
-        if not check_password_hash(db.session.scalars(db.select(User.password).where(User.email == email)).first(), password):
+        if not check_password_hash(db.session.scalars(db.select(User.password).where(User.email == email)).first(),
+                                   password):
             print("zle haslo")
         login_user(user_to_login)
         return redirect(url_for('home'))
     return render_template('login.html', form=form)
+
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -131,6 +150,7 @@ def register():
         login_user(new_user)
         return redirect(url_for('home'))
     return render_template('register.html', form=form)
+
 
 @app.route('/logout')
 def log_out():
