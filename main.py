@@ -94,6 +94,22 @@ def home():
         all_cafes = db.session.scalars(db.select(Cafe)).all()
     if FILTERS == 'has_sockets':
         all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.has_sockets.asc())).all()
+    if FILTERS == 'quiet':
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.quiet.asc())).all()
+    if FILTERS == 'wifi':
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.wifi.asc())).all()
+    if FILTERS == 'groups':
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.groups.asc())).all()
+    if FILTERS == 'coffee':
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.coffee.asc())).all()
+    if FILTERS == 'food':
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.food.asc())).all()
+    if FILTERS == 'alcohol':
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.alcohol.asc())).all()
+    if FILTERS == 'parking':
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.parking.asc())).all()
+    if FILTERS == 'toilet':
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.toilet.asc())).all()
     return render_template('index.html', all_cafes=all_cafes, today=today, user=current_user,
                            logged_in=current_user.is_authenticated)
 
