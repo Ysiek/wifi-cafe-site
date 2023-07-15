@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, redirect, flash, abort
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, PasswordField, SubmitField
+from wtforms import StringField, EmailField, PasswordField, SubmitField, IntegerField
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
@@ -47,8 +47,12 @@ class Cafe(db.Model):
     # 1 = exist but work bad
     # 2 = exist work quite good
     # 3 = exist and work really well
-    # RELATIONSHIP
+    # RELATIONSHIP WITH CAFE_HOURS
     cafe = relationship('Cafe_hours', back_populates='cafe')
+
+    #RELATIONSHIP WITH USERSLIKED
+    user_cafe = relationship('UsersLiked', back_populates='particular_cafe')
+
 
 
 class Cafe_hours(db.Model):
@@ -65,11 +69,45 @@ class Cafe_hours(db.Model):
     cafe = relationship("Cafe", back_populates='cafe')
 
 
+class UsersLiked(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    # RELATIONSHIP WITH USER
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = relationship('User', back_populates='user')
+
+    #RELATIONSHIP WITH CAFE
+    cafe_id = db.Column(db.Integer, db.ForeignKey('cafe.id'))
+    particular_cafe = relationship('Cafe', back_populates='user_cafe')
+
+
+
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(250), unique=True, nullable=False)
     password = db.Column(db.String(250), nullable=False)
     name = db.Column(db.String(250), nullable=False)
+    #RELATIONSHIP WITH USERSLIKED
+    user = relationship('UsersLiked', back_populates='user')
+
+
+class CafeForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    localization = StringField("Localization", validators=[DataRequired()])
+    image = StringField("Image", validators=[DataRequired()])
+    rating = IntegerField("Rating", validators=[DataRequired()])
+    sockets = IntegerField("Sockets", validators=[DataRequired()])
+    quiet = IntegerField("Quiet", validators=[DataRequired()])
+    wifi = IntegerField("Wifi", validators=[DataRequired()])
+    groups = IntegerField("Groups", validators=[DataRequired()])
+    coffee = IntegerField("Coffee", validators=[DataRequired()])
+    food = IntegerField("Food", validators=[DataRequired()])
+    alcohol = IntegerField("Alcohol", validators=[DataRequired()])
+    parking = IntegerField("Parking", validators=[DataRequired()])
+    toilet = IntegerField("Toilet", validators=[DataRequired()])
+    mon_fri = StringField("From monday-friday which hours cafe is open", validators=[DataRequired()])
+    saturday = StringField("Saturday", validators=[DataRequired()])
+    sunday = StringField("Sunday", validators=[DataRequired()])
 
 
 class Register(FlaskForm):
@@ -84,33 +122,36 @@ class Login(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Register')
 
+
 FILTERS = None
+
 
 @app.route('/')
 def home():
     global FILTERS
-
-    if not FILTERS:
+    if not FILTERS or FILTERS == 'reset':
         all_cafes = db.session.scalars(db.select(Cafe)).all()
-    if FILTERS == 'has_sockets':
-        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.has_sockets.asc())).all()
+    elif FILTERS == 'liked' and current_user.is_authenticated:
+        all_cafes = db.session.scalars(db.select(Cafe).join(UsersLiked).where(UsersLiked.user_id == current_user.id)).all()
+    if FILTERS == 'sockets':
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.has_sockets.desc())).all()
     if FILTERS == 'quiet':
-        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.quiet.asc())).all()
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.quiet.desc())).all()
     if FILTERS == 'wifi':
-        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.wifi.asc())).all()
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.wifi.desc())).all()
     if FILTERS == 'groups':
-        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.groups.asc())).all()
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.groups.desc())).all()
     if FILTERS == 'coffee':
-        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.coffee.asc())).all()
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.coffee.desc())).all()
     if FILTERS == 'food':
-        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.food.asc())).all()
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.food.desc())).all()
     if FILTERS == 'alcohol':
-        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.alcohol.asc())).all()
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.alcohol.desc())).all()
     if FILTERS == 'parking':
-        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.parking.asc())).all()
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.parking.desc())).all()
     if FILTERS == 'toilet':
-        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.toilet.asc())).all()
-    return render_template('index.html', all_cafes=all_cafes, today=today, user=current_user,
+        all_cafes = db.session.scalars(db.select(Cafe).order_by(Cafe.toilet.desc())).all()
+    return render_template('index.html', all_cafes=all_cafes, filter=FILTERS, today=today, user=current_user,
                            logged_in=current_user.is_authenticated)
 
 
@@ -119,6 +160,20 @@ def filters_manager(types):
     global FILTERS
     FILTERS = types
     return redirect(url_for('home'))
+
+
+@app.route('/add/<int:cafe_id>/<int:current_user_id>')
+def add_cafe(cafe_id, current_user_id):
+    if not current_user.is_authenticated:
+        abort(403)
+    new_user_like = UsersLiked(
+        user_id=current_user_id,
+        cafe_id=cafe_id
+    )
+    db.session.add(new_user_like)
+    db.session.commit()
+    return redirect(url_for('home'))
+
 
 
 @app.route('/cafe/<cafe_id>')
@@ -170,6 +225,8 @@ def register():
 
 @app.route('/logout')
 def log_out():
+    global FILTERS
+    FILTERS = None
     logout_user()
     return redirect(url_for('home'))
 

@@ -20,6 +20,7 @@
   
           <ul class="nav nav-pills">
             <li class="nav-item"><a href="cafe-site" class="nav-link">All cities</a></li>
+
             {% if not logged_in %}
             <li class="nav-item"><a href="{{ url_for('login') }}" class="nav-link">Log in</a></li>
             <li class="nav-item"><a href="{{ url_for('register') }}" class="nav-link">Register</a></li>
@@ -36,6 +37,7 @@
             </svg>
             <span>{{ cafe.rating }}%</span>
         </div>
+        <a href="{{ url_for('add_cafe', cafe_id=cafe.id, current_user_id=current_user.id) }}" class="user-like">Liked?</a>
     </div><br>
     <div class="container-fluid">
         <div class="row" style="padding-left: 35px;">
