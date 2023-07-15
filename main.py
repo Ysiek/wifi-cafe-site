@@ -166,26 +166,36 @@ def filters_manager(types):
 def add_cafe(cafe_id, current_user_id):
     if not current_user.is_authenticated:
         abort(403)
-    new_user_like = UsersLiked(
-        user_id=current_user_id,
-        cafe_id=cafe_id
-    )
-    db.session.add(new_user_like)
-    db.session.commit()
+    user = db.session.scalars(db.select(UsersLiked).where(UsersLiked.user_id == current_user_id)).all()
+    for u in user:
+        if not u.cafe_id == cafe_id:
+            new_user_like = UsersLiked(
+                user_id=current_user_id,
+                cafe_id=cafe_id
+            )
+            db.session.add(new_user_like)
+            db.session.commit()
     return redirect(url_for('home'))
 
 
 
-@app.route('/cafe/<cafe_id>')
+@app.route('/cafe/<int:cafe_id>')
 def cafe_site(cafe_id):
     cafe = db.session.scalars(db.select(Cafe).where(Cafe.id == cafe_id)).first()
+    user_like = False
+    if current_user.is_authenticated:
+        user_liked = db.session.scalars(db.select(UsersLiked).where(UsersLiked.user_id == current_user.id)).all()
+        for u in user_liked:
+            if u.cafe_id == cafe_id:
+                user_like = True
+
     color_dict = {
         0: 'grey',
         1: 'red',
         2: 'yellow',
         3: 'green'
     }
-    return render_template('cafe-site.html', cafe=cafe, color_dict=color_dict, user=current_user,
+    return render_template('cafe-site.html', cafe=cafe, user_like=user_like, color_dict=color_dict, user=current_user,
                            logged_in=current_user.is_authenticated)
 
 

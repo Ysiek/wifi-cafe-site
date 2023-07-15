@@ -18,11 +18,12 @@
         </a>
 
         <ul class="nav nav-pills">
-          <li class="nav-item"><a href='{{ url_for("log_out")}}' class="nav-link">All cities</a></li>
           {% if not logged_in %}
-          <li class="nav-item"><a href="{{ url_for('login') }}" class="nav-link">Log in</a></li>
-          <li class="nav-item"><a href="{{ url_for('register') }}" class="nav-link">Register</a></li>
-          {% endif %}
+            <li class="nav-item"><a href="{{ url_for('login') }}" class="nav-link">Log in</a></li>
+            <li class="nav-item"><a href="{{ url_for('register') }}" class="nav-link">Register</a></li>
+            {% else %}
+              <li class="nav-item"><a href="{{ url_for('log_out') }}" class="nav-link">Log Out</a></li>
+            {% endif %}
         </ul>
       </header>
     </div>
@@ -147,7 +148,7 @@
           <div class="cafe">
             <div class="row">
               <div class="col">
-                <img src="static/pexels-afta-putta-gunawan-683039 (1).jpg" style="height: 200px;">
+                <img src="{{ cafe.image }}" style="min-height: 200px; max-height: 200px; min-width: 300px; max-width: 300px;">
               </div>
               <div class="col cafes-name">
                   <span style="font-size: 30px; font-weight: bold;">{{ cafe.name }}</span><br>
