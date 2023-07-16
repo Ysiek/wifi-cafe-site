@@ -161,20 +161,25 @@ def filters_manager(types):
     FILTERS = types
     return redirect(url_for('home'))
 
+def add_cafe_fun(current_user_id, cafe_id):
+    new_user_like = UsersLiked(
+        user_id=current_user_id,
+        cafe_id=cafe_id
+    )
+    db.session.add(new_user_like)
+    db.session.commit()
 
 @app.route('/add/<int:cafe_id>/<int:current_user_id>')
 def add_cafe(cafe_id, current_user_id):
     if not current_user.is_authenticated:
         abort(403)
     user = db.session.scalars(db.select(UsersLiked).where(UsersLiked.user_id == current_user_id)).all()
-    for u in user:
-        if not u.cafe_id == cafe_id:
-            new_user_like = UsersLiked(
-                user_id=current_user_id,
-                cafe_id=cafe_id
-            )
-            db.session.add(new_user_like)
-            db.session.commit()
+    if not user:
+        add_cafe_fun(current_user_id, cafe_id)
+    else:
+        for u in user:
+            if not u.cafe_id == cafe_id:
+                add_cafe_fun(current_user_id, cafe_id)
     return redirect(url_for('home'))
 
 
@@ -184,9 +189,11 @@ def cafe_site(cafe_id):
     cafe = db.session.scalars(db.select(Cafe).where(Cafe.id == cafe_id)).first()
     user_like = False
     if current_user.is_authenticated:
-        user_liked = db.session.scalars(db.select(UsersLiked).where(UsersLiked.user_id == current_user.id)).all()
-        for u in user_liked:
-            if u.cafe_id == cafe_id:
+        sel_user = db.session.scalars(db.select(User).where(User.id == current_user.id)).first()
+        if not hasattr(sel_user, 'user'):
+            print('nie ma takiego atrybutu')
+        for like_object in sel_user.user:
+            if like_object.cafe_id == cafe_id:
                 user_like = True
 
     color_dict = {
